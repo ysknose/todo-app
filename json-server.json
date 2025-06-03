@@ -1,0 +1,10 @@
+{
+  "port": 3002,
+  "watch": true,
+  "static": "./public",
+  "cors": true,
+  "middlewares": [],
+  "routes": {},
+  "delay": 0,
+  "host": "localhost"
+}

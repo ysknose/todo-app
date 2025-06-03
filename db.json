@@ -1,0 +1,104 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "content": "プロジェクトの要件定義を作成",
+      "status": "todo",
+      "priority": "high",
+      "createdAt": "2024-01-01T09:00:00.000Z",
+      "updatedAt": "2024-01-01T09:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "content": "UIデザインのモックアップを作成",
+      "status": "todo",
+      "priority": "medium",
+      "createdAt": "2024-01-01T10:00:00.000Z",
+      "updatedAt": "2024-01-01T10:00:00.000Z"
+    },
+    {
+      "id": "3",
+      "content": "データベース設計を完了",
+      "status": "in-progress",
+      "priority": "high",
+      "createdAt": "2024-01-01T11:00:00.000Z",
+      "updatedAt": "2024-01-02T14:30:00.000Z"
+    },
+    {
+      "id": "4",
+      "content": "APIエンドポイントを実装",
+      "status": "in-progress",
+      "priority": "high",
+      "createdAt": "2024-01-01T12:00:00.000Z",
+      "updatedAt": "2024-01-02T16:00:00.000Z"
+    },
+    {
+      "id": "5",
+      "content": "ユーザー認証機能を実装",
+      "status": "done",
+      "priority": "high",
+      "createdAt": "2024-01-01T13:00:00.000Z",
+      "updatedAt": "2024-01-03T10:00:00.000Z"
+    },
+    {
+      "id": "6",
+      "content": "テストケースを作成",
+      "status": "done",
+      "priority": "medium",
+      "createdAt": "2024-01-01T14:00:00.000Z",
+      "updatedAt": "2024-01-03T15:00:00.000Z"
+    },
+    {
+      "id": "7",
+      "content": "ドキュメントを作成",
+      "status": "todo",
+      "priority": "low",
+      "createdAt": "2024-01-01T15:00:00.000Z",
+      "updatedAt": "2024-01-01T15:00:00.000Z"
+    },
+    {
+      "id": "8",
+      "content": "パフォーマンステストを実行",
+      "status": "todo",
+      "priority": "medium",
+      "createdAt": "2024-01-01T16:00:00.000Z",
+      "updatedAt": "2024-01-01T16:00:00.000Z"
+    },
+    {
+      "id": "1748969100115",
+      "content": "test",
+      "priority": "medium",
+      "status": "in-progress",
+      "createdAt": "2025-06-03T16:45:00.115Z",
+      "updatedAt": "2025-06-03T16:45:10.406Z"
+    },
+    {
+      "id": "1748971376030",
+      "content": "test",
+      "status": "todo",
+      "priority": "medium",
+      "createdAt": "2025-06-03T17:22:56.030Z",
+      "updatedAt": "2025-06-03T17:22:56.030Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "name": "田中太郎",
+      "email": "tanaka@example.com",
+      "role": "developer"
+    },
+    {
+      "id": "2",
+      "name": "佐藤花子",
+      "email": "sato@example.com",
+      "role": "designer"
+    },
+    {
+      "id": "3",
+      "name": "鈴木一郎",
+      "email": "suzuki@example.com",
+      "role": "manager"
+    }
+  ]
+}
