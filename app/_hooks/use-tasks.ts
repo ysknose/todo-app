@@ -35,7 +35,6 @@ export function useTasks(): UseTasksReturn {
           ? (err as ApiError).message
           : 'タスクの取得に失敗しました';
       setError(errorMessage);
-      console.error('Failed to fetch tasks:', err);
     } finally {
       setLoading(false);
     }

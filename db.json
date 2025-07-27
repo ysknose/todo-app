@@ -11,18 +11,18 @@
     {
       "id": "2",
       "content": "UIデザインのモックアップを作成",
-      "status": "todo",
+      "status": "in-progress",
       "priority": "medium",
       "createdAt": "2024-01-01T10:00:00.000Z",
-      "updatedAt": "2024-01-01T10:00:00.000Z"
+      "updatedAt": "2025-07-01T15:33:07.308Z"
     },
     {
       "id": "3",
       "content": "データベース設計を完了",
-      "status": "in-progress",
+      "status": "done",
       "priority": "high",
       "createdAt": "2024-01-01T11:00:00.000Z",
-      "updatedAt": "2024-01-02T14:30:00.000Z"
+      "updatedAt": "2025-07-01T15:33:08.668Z"
     },
     {
       "id": "4",

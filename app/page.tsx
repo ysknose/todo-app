@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-full p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <Image
           className="dark:invert"
@@ -28,7 +28,7 @@ export default function Home() {
 
         <div className="flex flex-col gap-4 items-center">
           <h2 className="text-xl font-semibold text-center">デモページ</h2>
-          <div className="flex gap-4 items-center flex-col sm:flex-row">
+          <div className="flex gap-4 items-center flex-col sm:flex-row flex-wrap">
             <Link
               className="rounded-full border border-solid border-blue-600 bg-blue-600 text-white transition-colors flex items-center justify-center hover:bg-blue-700 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto"
               href="/dnd-demo"
@@ -46,6 +46,18 @@ export default function Home() {
               href="/api-demo"
             >
               JSON Server API
+            </Link>
+            <Link
+              className="rounded-full border border-solid border-orange-600 bg-orange-600 text-white transition-colors flex items-center justify-center hover:bg-orange-700 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto"
+              href="/form-demo"
+            >
+              React Hook Form
+            </Link>
+            <Link
+              className="rounded-full border border-solid border-teal-600 bg-teal-600 text-white transition-colors flex items-center justify-center hover:bg-teal-700 font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto"
+              href="/table-demo"
+            >
+              TanStack Table
             </Link>
           </div>
         </div>

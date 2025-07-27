@@ -234,89 +234,89 @@ export default function MultiContainerDemoPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          カンバンボード デモ
-        </h1>
-        <p className="text-gray-600">
-          タスクをドラッグ&ドロップしてステータスを変更できます
-        </p>
-      </div>
-
-      <div className="flex gap-2 mb-6">
-        <Button onClick={addNewTask} variant="outline" size="sm">
-          タスクを追加
-        </Button>
-        <Button onClick={resetTasks} variant="outline" size="sm">
-          リセット
-        </Button>
-      </div>
-
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Container id="todo" title="TODO" tasks={todoTasks}>
-            <SortableContext
-              items={todoTasks}
-              strategy={verticalListSortingStrategy}
-            >
-              {todoTasks.map((task) => (
-                <TaskItem key={task.id} task={task} />
-              ))}
-            </SortableContext>
-          </Container>
-
-          <Container id="in-progress" title="進行中" tasks={inProgressTasks}>
-            <SortableContext
-              items={inProgressTasks}
-              strategy={verticalListSortingStrategy}
-            >
-              {inProgressTasks.map((task) => (
-                <TaskItem key={task.id} task={task} />
-              ))}
-            </SortableContext>
-          </Container>
-
-          <Container id="done" title="完了" tasks={doneTasks}>
-            <SortableContext
-              items={doneTasks}
-              strategy={verticalListSortingStrategy}
-            >
-              {doneTasks.map((task) => (
-                <TaskItem key={task.id} task={task} />
-              ))}
-            </SortableContext>
-          </Container>
+      <div className="container mx-auto py-8 px-4">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            カンバンボード デモ
+          </h1>
+          <p className="text-gray-600">
+            タスクをドラッグ&ドロップしてステータスを変更できます
+          </p>
         </div>
 
-        <DragOverlay>
-          {activeTask ? <TaskItem task={activeTask} /> : null}
-        </DragOverlay>
-      </DndContext>
+        <div className="flex gap-2 mb-6">
+          <Button onClick={addNewTask} variant="outline" size="sm">
+            タスクを追加
+          </Button>
+          <Button onClick={resetTasks} variant="outline" size="sm">
+            リセット
+          </Button>
+        </div>
 
-      <Card className="mt-8">
-        <CardHeader>
-          <CardTitle>使い方</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2 text-sm text-gray-600">
-            <p>
-              • タスクをドラッグして他のコンテナにドロップしてステータスを変更
-            </p>
-            <p>• 同じコンテナ内でドラッグして順序を変更</p>
-            <p>
-              • 「タスクを追加」ボタンで新しいタスクを追加（TODOに追加されます）
-            </p>
-            <p>• 「リセット」ボタンで初期状態に戻します</p>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Container id="todo" title="TODO" tasks={todoTasks}>
+              <SortableContext
+                items={todoTasks}
+                strategy={verticalListSortingStrategy}
+              >
+                {todoTasks.map((task) => (
+                  <TaskItem key={task.id} task={task} />
+                ))}
+              </SortableContext>
+            </Container>
+
+            <Container id="in-progress" title="進行中" tasks={inProgressTasks}>
+              <SortableContext
+                items={inProgressTasks}
+                strategy={verticalListSortingStrategy}
+              >
+                {inProgressTasks.map((task) => (
+                  <TaskItem key={task.id} task={task} />
+                ))}
+              </SortableContext>
+            </Container>
+
+            <Container id="done" title="完了" tasks={doneTasks}>
+              <SortableContext
+                items={doneTasks}
+                strategy={verticalListSortingStrategy}
+              >
+                {doneTasks.map((task) => (
+                  <TaskItem key={task.id} task={task} />
+                ))}
+              </SortableContext>
+            </Container>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+
+          <DragOverlay>
+            {activeTask ? <TaskItem task={activeTask} /> : null}
+          </DragOverlay>
+        </DndContext>
+
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle>使い方</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 text-sm text-gray-600">
+              <p>
+                • タスクをドラッグして他のコンテナにドロップしてステータスを変更
+              </p>
+              <p>• 同じコンテナ内でドラッグして順序を変更</p>
+              <p>
+                • 「タスクを追加」ボタンで新しいタスクを追加（TODOに追加されます）
+              </p>
+              <p>• 「リセット」ボタンで初期状態に戻します</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
   );
 }

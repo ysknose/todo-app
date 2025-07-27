@@ -6,15 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/components/ui/select';
 import { Loader2, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { useTasks } from '../_hooks/useTasks';
+import { useTasks } from '../_hooks/use-tasks';
 import type { CreateTaskRequest, Task } from '../_lib/api/types';
 
 export default function ApiDemoPage() {
