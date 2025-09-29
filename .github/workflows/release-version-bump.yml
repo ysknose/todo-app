@@ -1,0 +1,82 @@
+name: Bump version on release branch creation
+
+on:
+  create:
+
+permissions:
+  contents: write
+
+jobs:
+  bump-version:
+    if: ${{ github.event.ref_type == 'branch' && startsWith(github.event.ref, 'release/') }}
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_PUSH_TOKEN: ${{ secrets.RELEASE_PUSH_TOKEN }}
+      RELEASE_GIT_USER_NAME: ${{ secrets.RELEASE_GIT_USER_NAME }}
+      RELEASE_GIT_USER_EMAIL: ${{ secrets.RELEASE_GIT_USER_EMAIL }}
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.ref }}
+
+      - name: Use PAT for push (optional)
+        if: ${{ env.RELEASE_PUSH_TOKEN != '' }}
+        run: |
+          git remote set-url origin https://x-access-token:${{ env.RELEASE_PUSH_TOKEN }}@github.com/${{ github.repository }}.git
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Determine bump type from branch name
+        id: bump
+        shell: bash
+        run: |
+          branch='${{ github.event.ref }}'
+          suffix="${branch#release/}"
+          type="${suffix%%/*}"
+          case "$type" in
+            major)
+              echo "type=major" >> "$GITHUB_OUTPUT"
+              echo "skip=false" >> "$GITHUB_OUTPUT"
+              ;;
+            minor)
+              echo "type=minor" >> "$GITHUB_OUTPUT"
+              echo "skip=false" >> "$GITHUB_OUTPUT"
+              ;;
+            patch|revision)
+              echo "type=patch" >> "$GITHUB_OUTPUT"
+              echo "skip=false" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Unrecognized release branch type: $type from $branch"
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+
+      - name: Configure Git
+        if: ${{ steps.bump.outputs.skip != 'true' }}
+        run: |
+          NAME="${RELEASE_GIT_USER_NAME:-${{ github.actor }}}"
+          EMAIL="${RELEASE_GIT_USER_EMAIL:-41898282+github-actions[bot]@users.noreply.github.com}"
+          if [ -z "$NAME" ]; then NAME="github-actions[bot]"; fi
+          git config user.name "$NAME"
+          git config user.email "$EMAIL"
+
+      - name: Bump version in package files
+        if: ${{ steps.bump.outputs.skip != 'true' }}
+        run: |
+          npm version "${{ steps.bump.outputs.type }}" --no-git-tag-version
+
+      - name: Commit and push changes
+        if: ${{ steps.bump.outputs.skip != 'true' }}
+        run: |
+          git add package.json package-lock.json || true
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "chore(release): bump version (${{ steps.bump.outputs.type }}) [skip ci]"
+          git push origin HEAD:${{ github.event.ref }}
