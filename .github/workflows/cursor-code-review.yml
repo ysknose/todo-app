@@ -24,7 +24,7 @@ jobs:
             - name: Install Cursor CLI
               shell: bash
               run: |
-                  curl -fsSL https://cursor.sh/install | bash
+                  curl -fsSL https://cursor.com/install | bash
                   echo "$HOME/.cursor/bin" >> $GITHUB_PATH
 
             - name: Verify installations
@@ -145,6 +145,10 @@ jobs:
                     [[ $count -ge 10 ]] && break
                   done < inline.txt
 
-                  summary_body=$(cat summary.txt || echo "このPRの自動レビューを実行しました。詳細は差分をご確認ください。")
+                  if grep -q '[^[:space:]]' summary.txt 2>/dev/null; then
+                    summary_body=$(cat summary.txt)
+                  else
+                    summary_body="このPRの自動レビューを実行しました。詳細は差分をご確認ください。"
+                  fi
                   # Always add a summary comment
                   gh pr comment $PR_NUMBER --body "$summary_body"
