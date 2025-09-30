@@ -1,9 +1,15 @@
 {
   "name": "todo-app",
   "version": "0.1.1",
+  "buildInfo": {
+    "commit": "259aff7",
+    "date": "202509292244",
+    "label": "0.1.1_259aff7_202509292244"
+  },
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "prebuild": "node scripts/update-build-info.cjs",
     "build": "next build",
     "start": "next start",
     "lint": "npx @biomejs/biome check .",
