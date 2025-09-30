@@ -46,7 +46,7 @@ jobs:
                   BASE_SHA=${{ github.event.pull_request.base.sha }}
 
                   # Compose instruction for the agent
-                  read -r -d '' PROMPT << 'EOF'
+                  PROMPT=$(cat << 'EOF'
                   あなたはリポジトリの変更差分をレビューする上級エンジニアです。自動化やAIには触れず、重要度の高い指摘のみを短く具体的に述べてください。
 
                   目的:
@@ -95,6 +95,7 @@ jobs:
                   [END-SUMMARY]
                   ---END---
                   EOF
+                  )
 
                   # Gather context
                   gh pr diff $PR_NUMBER > pr.diff
