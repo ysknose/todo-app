@@ -102,7 +102,7 @@ jobs:
                   gh pr view $PR_NUMBER --json comments > pr_comments.json
 
                   # Run Cursor agent to produce review content
-                  cursor-agent --force --output-format=text --print "${PROMPT}
+                  cursor-agent --force --model "gpt-5" --output-format=text --print "${PROMPT}
 
                   [DIFF]
                   $(sed 's/`/\`/g' pr.diff)
