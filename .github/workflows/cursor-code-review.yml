@@ -1,0 +1,154 @@
+name: Cursor Code Review
+
+on:
+    pull_request:
+        types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+    contents: read
+    pull-requests: write
+
+jobs:
+    review:
+        runs-on: ubuntu-latest
+        if: github.event.pull_request.draft == false
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node (for auxiliary scripts if needed)
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+
+            - name: Install Cursor CLI
+              shell: bash
+              run: |
+                  curl -fsSL https://cursor.com/install | bash
+                  echo "$HOME/.cursor/bin" >> $GITHUB_PATH
+
+            - name: Verify installations
+              shell: bash
+              run: |
+                  gh --version
+                  cursor --version || true
+                  cursor-agent --version || true
+
+            - name: Run code review and comment
+              env:
+                  CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              shell: bash
+              run: |
+                  PR_NUMBER=${{ github.event.pull_request.number }}
+                  REPO=${{ github.repository }}
+                  HEAD_SHA=${{ github.event.pull_request.head.sha }}
+                  BASE_SHA=${{ github.event.pull_request.base.sha }}
+
+                  # Compose instruction for the agent
+                  PROMPT=$(cat << 'EOF'
+                  あなたはリポジトリの変更差分をレビューする上級エンジニアです。自動化やAIには触れず、重要度の高い指摘のみを短く具体的に述べてください。
+
+                  目的:
+                  1) PR差分から重大/高優先の問題を選別し、最大10件まで指摘
+                  2) 可能なら変更行に紐づくインライン指摘を準備
+                  3) 最後に簡潔な日本語サマリーを提示
+
+                  優先度順のレビュー方針:
+                  1) 🔒 セキュリティ: 入力バリデーション/エスケープ, 認可境界, 機微情報露出, インジェクション/パストラバーサル, 秘密管理
+                  2) ⚠️ 正当性/破壊的変更: 仕様逸脱, 境界条件, null/undefined, 例外処理, 後方互換性/契約破壊
+                  3) ⚡ パフォーマンス: N+1, 不要な重いループ/再計算, 大きすぎるpayload, キャッシュ/メモ化/遅延
+
+                  チェック観点（必要に応じて）:
+                  - 設計/アーキテクチャ: 責務分割, 共通化/重複排除
+                  - API/契約/型: DTO整合性, バージョニング, 非推奨化
+                  - エラー処理/回復: ユーザー通知, リトライ/バックオフ, フォールバック
+                  - 並行性/状態: 競合/レース, React副作用依存配列, 一貫性
+                  - 可読性/メンテ性: 命名, 関数分割, 死んだコード/過剰TODO
+                  - テスト: 重要分岐のテスト, 回帰テストの追加/更新
+                  - 型/静的解析: anyの流出, 型ガード, null安全
+                  - ログ/監視: ログレベル, 構造化, PII除外, 可観測性
+                  - A11y/i18n: フォーカス/キーボード, ARIA, 文言外部化
+                  - 依存関係: サイズ/ライセンス/脆弱性, 不要依存の削除
+                  - ドキュメント: README/移行手順/リリースノート
+                  - CI/CD/運用: ワークフロー権限, トークン最小化, キャッシュ/フレーク対策
+                  - ファイル構成/規約: ディレクトリ/命名/フォーマット準拠
+                  - UI/UX（該当時）: 一貫した状態表示, 破壊的UI変更の合意
+
+                  コメント/選別ルール:
+                  - 最重要から最大10件のみ。重複や近傍重複はスキップ。
+                  - 1コメント1指摘、1–2文で具体的に。可能なら簡潔な修正案も示す。
+                  - 変更差分に存在する行にのみインライン。行が特定できない場合はサマリーに集約。
+
+                  入力コンテキスト:
+                  - gh pr diff で得た差分
+                  - 既存コメント (gh pr view --json comments)
+
+                  出力フォーマット（厳守）:
+                  ---COMMENTS---
+                  [INLINES]
+                  # 行単位コメント案（最大10件）。各行は「path:line: 短い指摘文」。
+                  [END-INLINES]
+
+                  [SUMMARY]
+                  # 日本語の簡潔サマリー 3–6行。最重要指摘の要約と推奨アクション。
+                  [END-SUMMARY]
+                  ---END---
+                  EOF
+                  )
+
+                  # Gather context
+                  gh pr diff $PR_NUMBER > pr.diff
+                  gh pr view $PR_NUMBER --json comments > pr_comments.json
+
+                  # Run Cursor agent to produce review content
+                  cursor-agent --force --model "gpt-5" --output-format=text --print "${PROMPT}
+
+                  [DIFF]
+                  $(sed 's/`/\`/g' pr.diff)
+                  [END-DIFF]
+
+                  [COMMENTS]
+                  $(cat pr_comments.json)
+                  [END-COMMENTS]
+                  " > review.txt || true
+
+                  echo "---- Raw agent output ----"
+                  sed -n '1,200p' review.txt | cat
+
+                  # Extract inlines and summary
+                  awk '/---COMMENTS---/{flag=1;next}/---END---/{flag=0}flag{print}' review.txt > extracted.txt
+
+                  awk '/\[INLINES\]/{flag=1;next}/\[END-INLINES\]/{flag=0}flag{print}' extracted.txt > inline.txt
+                  awk '/\[SUMMARY\]/{flag=1;next}/\[END-SUMMARY\]/{flag=0}flag{print}' extracted.txt > summary.txt
+
+                  echo "---- Inline suggestions ----" && cat inline.txt || true
+                  echo "---- Summary ----" && cat summary.txt || true
+
+                  # Post inline comments (best-effort; fallback to summary-only)
+                  count=0
+                  while IFS= read -r line; do
+                    [[ -z "$line" ]] && continue
+                    path="$(echo "$line" | cut -d':' -f1)"
+                    lineno="$(echo "$line" | cut -d':' -f2)"
+                    body="$(echo "$line" | cut -d':' -f3- | sed 's/^ //')"
+                    if [[ -n "$path" && -n "$lineno" && -n "$body" ]]; then
+                      gh api \
+                        repos/${REPO}/pulls/${PR_NUMBER}/comments \
+                        -f path="$path" \
+                        -f body="$body" \
+                        -f commit_id="$HEAD_SHA" \
+                        -f line="$lineno" \
+                        -f side=RIGHT || true
+                      count=$((count+1))
+                    fi
+                    [[ $count -ge 10 ]] && break
+                  done < inline.txt
+
+                  if grep -q '[^[:space:]]' summary.txt 2>/dev/null; then
+                    summary_body=$(cat summary.txt)
+                  else
+                    summary_body="このPRの自動レビューを実行しました。詳細は差分をご確認ください。"
+                  fi
+                  # Always add a summary comment
+                  gh pr comment $PR_NUMBER --body "$summary_body"
